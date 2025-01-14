@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+option go_package = "github.com/vaidik-bajpai/d-cache/common/api";
+
+package api;
+
+service Cache {
+    rpc Put(PutReq) returns (PutRes);
+    rpc Get(GetReq) returns (GetRes);
+}
+
+message PutReq {
+    bytes key = 1;
+    bytes value = 2;
+}
+
+message PutRes {}
+
+message GetReq {
+    bytes key = 1;
+}
+
+message GetRes {
+    bytes value = 1;
+}
+
