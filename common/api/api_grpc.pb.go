@@ -19,8 +19,9 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	Cache_Put_FullMethodName = "/api.Cache/Put"
-	Cache_Get_FullMethodName = "/api.Cache/Get"
+	Cache_Put_FullMethodName  = "/api.Cache/Put"
+	Cache_Get_FullMethodName  = "/api.Cache/Get"
+	Cache_Join_FullMethodName = "/api.Cache/Join"
 )
 
 // CacheClient is the client API for Cache service.
@@ -29,6 +30,7 @@ const (
 type CacheClient interface {
 	Put(ctx context.Context, in *PutReq, opts ...grpc.CallOption) (*PutRes, error)
 	Get(ctx context.Context, in *GetReq, opts ...grpc.CallOption) (*GetRes, error)
+	Join(ctx context.Context, in *JoinReq, opts ...grpc.CallOption) (*JoinRes, error)
 }
 
 type cacheClient struct {
@@ -59,12 +61,23 @@ func (c *cacheClient) Get(ctx context.Context, in *GetReq, opts ...grpc.CallOpti
 	return out, nil
 }
 
+func (c *cacheClient) Join(ctx context.Context, in *JoinReq, opts ...grpc.CallOption) (*JoinRes, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(JoinRes)
+	err := c.cc.Invoke(ctx, Cache_Join_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // CacheServer is the server API for Cache service.
 // All implementations must embed UnimplementedCacheServer
 // for forward compatibility.
 type CacheServer interface {
 	Put(context.Context, *PutReq) (*PutRes, error)
 	Get(context.Context, *GetReq) (*GetRes, error)
+	Join(context.Context, *JoinReq) (*JoinRes, error)
 	mustEmbedUnimplementedCacheServer()
 }
 
@@ -80,6 +93,9 @@ func (UnimplementedCacheServer) Put(context.Context, *PutReq) (*PutRes, error) {
 }
 func (UnimplementedCacheServer) Get(context.Context, *GetReq) (*GetRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Get not implemented")
+}
+func (UnimplementedCacheServer) Join(context.Context, *JoinReq) (*JoinRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Join not implemented")
 }
 func (UnimplementedCacheServer) mustEmbedUnimplementedCacheServer() {}
 func (UnimplementedCacheServer) testEmbeddedByValue()               {}
@@ -138,6 +154,24 @@ func _Cache_Get_Handler(srv interface{}, ctx context.Context, dec func(interface
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Cache_Join_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(JoinReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CacheServer).Join(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Cache_Join_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CacheServer).Join(ctx, req.(*JoinReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Cache_ServiceDesc is the grpc.ServiceDesc for Cache service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -152,6 +186,10 @@ var Cache_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Get",
 			Handler:    _Cache_Get_Handler,
+		},
+		{
+			MethodName: "Join",
+			Handler:    _Cache_Join_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
