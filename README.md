@@ -28,3 +28,21 @@
 
 - The gRPC-based cache server enables the coordination between nodes in the cluster.
 - It allows nodes to join or leave the cluster and facilitates communication between nodes.
+
+## Future Improvements and Features
+
+### 1. **Implementing Sharding**
+
+- **Sharding** will be implemented to improve the scalability and distribution of cache data across nodes. With sharding, the cache system will split the data into smaller, more manageable parts (shards), which can be distributed across multiple nodes in the cluster. This allows the system to handle larger datasets efficiently while ensuring high availability and load balancing.
+- Each shard will be managed by a separate group of nodes, potentially with its own Raft consensus group. This will improve the system’s overall performance and reliability by distributing read and write operations more evenly across the nodes.
+
+### 2. **Extensive Testing of the Application**
+
+- To ensure the reliability and robustness of `Dcache`, **extensive testing** will be conducted. This includes unit tests, integration tests, and load testing to simulate high-throughput scenarios.
+- Testing will cover:
+  - **Leader election and Raft protocol functionality**: Ensuring that the leader election process works smoothly and the Raft protocol maintains consistency across the cluster.
+  - **Cache consistency**: Verifying that the cache data is consistent and correctly handled between nodes, even during failures and recovery.
+  - **Sharding efficiency**: Ensuring that the sharding mechanism distributes data evenly and efficiently across the cluster.
+  - **Fault tolerance**: Simulating node failures and ensuring the system remains highly available, with minimal disruption to services.
+
+These improvements will help `Dcache` scale further, handle larger workloads, and provide a more reliable, consistent caching solution.
